@@ -227,11 +227,10 @@ if __name__ == '__main__':
 
     # img = equalize_image(img)
 
-    # img = cutout_mask(img, mask_height_factor)
+    # img = cutout_mask(img, cutout_mask_height_factor)
 
     img = clip_image(img)
 
     img = img.numpy()[...,::-1] * 255
     cv2.imwrite("sample_aug.png", img)
-
     
