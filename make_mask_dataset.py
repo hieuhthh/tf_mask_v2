@@ -8,13 +8,6 @@ from gen_mask import *
 def make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask=2, do_resize=True, n_thres=5):
     """
     using multiprocessing
-    input:
-        route to main directory and phrase ("train", "valid", "test")
-        or just route to the directory that its subfolder are classes
-    output:
-        X_path: path to img
-        Y_int: int label
-        all_class: list of string class name
     """
 
     if tool_gen_mask is None:
