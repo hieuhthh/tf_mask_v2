@@ -66,17 +66,26 @@ with strategy.scope():
         emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
                                      emb_dim, extract_dim, dense_dim, trans_layers,
                                      kernel_sizes, dilation_rates)
-    model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int)
+    model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int, append_norm)
     model.summary()
 
-    losses = {
-        'cate_output' : ArcfaceLoss(from_logits=True, 
-                                    label_smoothing=arcface_label_smoothing,
-                                    margin1=arcface_margin1,
-                                    margin2=arcface_margin2,
-                                    margin3=arcface_margin3),
-        'embedding' : SupervisedContrastiveLoss(temperature=sup_con_temperature),
-    }
+    if not append_norm:
+        losses = {
+            'cate_output' : ArcfaceLoss(from_logits=True, 
+                                        label_smoothing=arcface_label_smoothing,
+                                        margin1=arcface_margin1,
+                                        margin2=arcface_margin2,
+                                        margin3=arcface_margin3),
+            'embedding' : SupervisedContrastiveLoss(temperature=sup_con_temperature),
+        }
+    else:
+        losses = {
+            'cate_output' : AdaFaceLoss(from_logits=True, 
+                                        batch_size=BATCH_SIZE,
+                                        label_smoothing=arcface_label_smoothing,
+                                        margin=arcface_margin2),
+            'embedding' : SupervisedContrastiveLoss(temperature=sup_con_temperature),
+        }
 
     loss_weights = {
         'cate_output' : arc_face_weight,

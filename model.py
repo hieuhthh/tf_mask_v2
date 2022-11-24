@@ -104,13 +104,13 @@ def create_emb_model(base, final_dropout=0.1, have_emb_layer=True, name="embeddi
 
     return model
 
-def create_model(input_shape, emb_model, n_labels, use_normdense=True, use_cate_int=False):
+def create_model(input_shape, emb_model, n_labels, use_normdense=True, use_cate_int=False, append_norm=False):
     inp = Input(shape=input_shape, name="input_1")
     
     x = emb_model(inp)
     
     if use_normdense:
-        cate_output = NormDense(n_labels, name='cate_output')(x)
+        cate_output = NormDense(n_labels, name='cate_output', append_norm=append_norm)(x)
     else:
         cate_output = Dense(n_labels, name='cate_output')(x)
 
@@ -149,5 +149,5 @@ if __name__ == "__main__":
         emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
                                      emb_dim, extract_dim, dense_dim, trans_layers,
                                      kernel_sizes, dilation_rates)
-    model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int)
+    model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int, append_norm)
     model.summary()

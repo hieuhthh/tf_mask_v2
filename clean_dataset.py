@@ -80,22 +80,18 @@ if __name__ == '__main__':
     globals().update(settings)
 
     des = path_join(route, 'dataset')
+    # des = path_join(route, 'mask_dataset')
 
-    try:
-        shutil.rmtree(des)
-    except:
-        pass
+    mkdir(des)
 
-    try:
-        os.mkdir(des)
-    except:
-        pass
+    # route = 'unzip/gnv_dataset'
+    # clean_image(route, des, im_size)
 
-    route = 'unzip/gnv_dataset'
-    clean_image(route, des, im_size)
+    # route = 'unzip/VN-celeb'
+    # clean_image(route, des, im_size)
 
-    route = 'unzip/VN-celeb'
-    clean_image(route, des, im_size)
+    # route = 'unzip/glint360k_224'
+    # clean_image(route, des, im_size)
 
-    route = 'unzip/glint360k_224'
+    route = 'unzip/ImgOut2'
     clean_image(route, des, im_size)

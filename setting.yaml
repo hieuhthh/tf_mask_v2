@@ -33,6 +33,7 @@ final_dropout: 0.4
 have_emb_layer: True
 emb_dim: 512
 use_normdense: True
+append_norm: True # True when use adaface
 
 # advance emb
 extract_dim: 128
