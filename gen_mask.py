@@ -4,7 +4,8 @@ from numpy import imag
 import os 
 import cv2
 import secrets
-import tensorflow as tf
+# import tensorflow as tf
+import random
 
 from mask_the_face.utils.aux_functions import *
 
@@ -16,8 +17,12 @@ def build_gen_mask(path_to_dlib_model, from_cv2=False):
     if path_to_dlib_model is None:
         return None
 
+    colors = ['#e23404', '#dee204', '#25e204', '#0473e2', '#3c04e2', '#d304e2', '#e20494', '#2D0A00', '#816C66']
+    _color = random.choice(colors)
+    # color='#0473e2' # blue
+
     # already random
-    args = Namespace(code='', color='#0473e2', color_weight=0.5, feature=False, mask_type='random',
+    args = Namespace(code='', color=_color, color_weight=random.uniform(0.4, 0.6), feature=False, mask_type='random',
                      path='', pattern='', pattern_weight=0.5, verbose=False, write_original_image=False)
 
     args.detector = dlib.get_frontal_face_detector()
@@ -64,12 +69,10 @@ def build_gen_mask(path_to_dlib_model, from_cv2=False):
 
     return func_gen_mask_cv2 if from_cv2 else func_gen_mask
 
-# if __name__ == '__main__':
-#     path_to_dlib_model = 'download/shape_predictor_68_face_landmarks.dat'
-#     tool_gen_mask = build_gen_mask(path_to_dlib_model)
-#     img = cv2.imread("/home/lap14880/hieunmt/tf_mask_gen/unzip/VN-celeb/1/0.png")
-#     print(img)
-#     cv2.imwrite("facemask_input.jpg",img)
-#     img = tool_gen_mask(img)
-#     print(img)
-#     cv2.imwrite("facemask_output.jpg",img)
+if __name__ == '__main__':
+    path_to_dlib_model = 'download/shape_predictor_68_face_landmarks.dat'
+    tool_gen_mask = build_gen_mask(path_to_dlib_model, from_cv2=True)
+    img = cv2.imread("/home/lap14880/hieunmt/tf_nonmask/unzip/VN-celeb/3/0.png")
+    cv2.imwrite("facemask_input.jpg",img)
+    img = tool_gen_mask(img)
+    cv2.imwrite("facemask_output.jpg",img)
