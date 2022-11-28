@@ -1,1 +1,2 @@
+# https://stackoverflow.com/questions/37126437/download-large-google-drive-files
 curl -H "Authorization: Bearer ya29.a0AeTM1ifJqL52QjrPbZt4lnn3KpJOQ8LU2wSpQRM8zh0hxJlwyIGpizLPZq3pSBy5kZQ-KWVmZlzIuKZVUoCGN4qKdw8DmlY4RlRAgMVl4fXXiQ7ka2_Kqza8_BWIqc9arvY624AvKppqrGQ5wd9Fk8HKgTy-aCgYKAVcSARASFQHWtWOmgGCWPLe0jumW8KD6vHPLng0163" https://www.googleapis.com/drive/v3/files/1Gd1FDFiJ6RyK4mpUc3SohAdgxOExExmS?alt=media -o download/mask_tinh.zip

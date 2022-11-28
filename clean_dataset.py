@@ -31,6 +31,11 @@ def clean_image(route, to_des, im_size):
             des_class = os.path.join(to_des, sign + '_' + cl)
 
             try:
+                shutil.rmtree(des_class)
+            except:
+                pass
+
+            try:
                 os.mkdir(des_class)
             except:
                 pass
@@ -79,8 +84,8 @@ if __name__ == '__main__':
     settings = get_settings()
     globals().update(settings)
 
-    des = path_join(route, 'dataset')
-    # des = path_join(route, 'mask_dataset')
+    # des = path_join(route, 'dataset')
+    des = path_join(route, 'mask_dataset')
 
     mkdir(des)
 

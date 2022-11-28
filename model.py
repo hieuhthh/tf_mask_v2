@@ -7,6 +7,12 @@ def get_base_model(name, input_shape):
     if name == 'EfficientNetV2S':
         return efficientnet.EfficientNetV2S(num_classes=0, input_shape=input_shape, pretrained="imagenet21k")
 
+    if name == 'EfficientNetV2B1':
+        return efficientnet.EfficientNetV2B1(num_classes=0, input_shape=input_shape, pretrained="imagenet21k")
+
+    if name == 'EfficientNetV2B2':
+        return efficientnet.EfficientNetV2B2(num_classes=0, input_shape=input_shape, pretrained="imagenet21k")
+
     if name == 'EfficientNetV1B1':
         return efficientnet.EfficientNetV1B1(num_classes=0, input_shape=input_shape, pretrained="imagenet")
 
@@ -144,7 +150,7 @@ if __name__ == "__main__":
 
     base = get_base_model(base_name, input_shape)
     if use_simple_emb:
-        emb_model = create_emb_model(base, final_dropout, have_emb_layer, emb_dim)
+        emb_model = create_simple_emb_model(base, final_dropout, have_emb_layer, emb_dim)
     else:
         emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
                                      emb_dim, extract_dim, dense_dim, trans_layers,
