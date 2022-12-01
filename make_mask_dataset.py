@@ -10,6 +10,8 @@ def make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask=2, do_resize
     using multiprocessing
     """
 
+    print(route)
+
     if tool_gen_mask is None:
         print('tool_gen_mask is None')
         return
@@ -87,22 +89,20 @@ if __name__ == '__main__':
 
     settings = get_settings()
     globals().update(settings)
-
-    # route = 'dataset'
-    # route = '/home/lap14880/hieunmt/tf_nonmask/unzip/VN-celeb'
-    route = '/home/lap14880/hieunmt/tf_nonmask/dataset'
-    to_des = 'mask_dataset'
-
+    
     tool_gen_mask = build_gen_mask(path_to_dlib_model, from_cv2=True)
 
-    try:
-        shutil.rmtree(to_des)
-    except:
-        pass
+    des = path_join(route, 'dataset')
+    mkdir(des)
 
-    try:
-        os.mkdir(to_des)
-    except:
-        pass
+    do_resize = True
 
-    make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask, do_resize=False, n_thres=n_thres)
+    route = '/storage/hieunmt/tf_nonmask_v2/tf_nonmask/unzip/VN-celeb'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, n_mask, do_resize=do_resize, n_thres=n_thres)
+
+    route = '/storage/hieunmt/tf_nonmask_v2/tf_nonmask/unzip/gnv_dataset'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, n_mask, do_resize=do_resize, n_thres=n_thres)
+
+    route = '/storage/hieunmt/tf_nonmask_v2/tf_nonmask/unzip/glint360k_224'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, n_mask, do_resize=do_resize, n_thres=n_thres)
+

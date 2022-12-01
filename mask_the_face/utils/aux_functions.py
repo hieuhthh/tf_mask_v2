@@ -322,7 +322,9 @@ def mask_face(image, face_location, six_points, angle, args, type="surgical"):
 
     if args.color:
         # Apply color to mask
-        img = color_the_mask(img, args.color, args.color_weight)
+        colors = ['#e23404', '#dee204', '#25e204', '#0473e2', '#3c04e2', '#d304e2', '#e20494', '#2D0A00', '#816C66']
+        _color = random.choice(colors)
+        img = color_the_mask(img, _color, args.color_weight)
 
     mask_line = np.float32(
         [cfg.mask_a, cfg.mask_b, cfg.mask_c, cfg.mask_f, cfg.mask_e, cfg.mask_d]

@@ -10,14 +10,20 @@ globals().update(settings)
 
 from_dir = path_join(route, 'download')
 des = path_join(route, 'unzip')
-force_mkdir(des)
+
+mkdir(des)
 
 def fast_unzip(zip_path, out_path):
-    start = time.time()
-    with ZipFile(zip_path) as handle:
-        with ThreadPoolExecutor(2) as exe:
-            _ = [exe.submit(handle.extract, m, out_path) for m in handle.namelist()]
-    print('Unzip', zip_path, 'Time:', time.time() - start)
+    print(zip_path)
+    try:
+        start = time.time()
+        with ZipFile(zip_path) as handle:
+            with ThreadPoolExecutor(2) as exe:
+                _ = [exe.submit(handle.extract, m, out_path) for m in handle.namelist()]
+    except:
+        pass
+    finally:
+        print('Unzip', zip_path, 'Time:', time.time() - start)
 
 # filename = 'vnceleb'
 # zip_path = path_join(from_dir, filename + '.zip')
@@ -36,4 +42,20 @@ def fast_unzip(zip_path, out_path):
 # filename = 'mask_tinh'
 # zip_path = path_join(from_dir, filename + '.zip')
 # fast_unzip(zip_path, des)
+
+# filename = 'RWMFD_part_2_pro'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
+
+# filename = 'AFDB_masked_face_dataset'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
+
+filename = 'masked_ms1m'
+zip_path = path_join(from_dir, filename + '.zip')
+fast_unzip(zip_path, des)
+
+filename = 'final'
+zip_path = path_join(from_dir, filename + '.zip')
+fast_unzip(zip_path, des)
 

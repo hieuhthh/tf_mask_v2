@@ -16,10 +16,8 @@ class Namespace:
 def build_gen_mask(path_to_dlib_model, from_cv2=False):
     if path_to_dlib_model is None:
         return None
-
-    colors = ['#e23404', '#dee204', '#25e204', '#0473e2', '#3c04e2', '#d304e2', '#e20494', '#2D0A00', '#816C66']
-    _color = random.choice(colors)
-    # color='#0473e2' # blue
+    
+    _color='#0473e2' # blue
 
     # already random
     args = Namespace(code='', color=_color, color_weight=random.uniform(0.4, 0.6), feature=False, mask_type='random',

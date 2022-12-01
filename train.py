@@ -59,15 +59,23 @@ tf.compat.v1.reset_default_graph()
 strategy = auto_select_accelerator()
 
 with strategy.scope():
-    base = get_base_model(base_name, input_shape)
-    if use_simple_emb:
-        emb_model = create_emb_model(base, final_dropout, have_emb_layer, emb_dim)
+    if emb_pretrain is None:
+        base = get_base_model(base_name, input_shape)
+        if use_simple_emb:
+            emb_model = create_simple_emb_model(base, final_dropout, have_emb_layer, emb_dim)
+        else:
+            emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
+                                        emb_dim, extract_dim, dense_dim, trans_layers,
+                                        kernel_sizes, dilation_rates)
     else:
-        emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
-                                     emb_dim, extract_dim, dense_dim, trans_layers,
-                                     kernel_sizes, dilation_rates)
+        emb_model = tf.keras.models.load_model(emb_pretrain, custom_objects={'wBiFPNAdd':wBiFPNAdd, 
+                                                                             'PositionEmbedding':PositionEmbedding,
+                                                                             'TransformerEncoder':TransformerEncoder})
+
     model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int, append_norm)
     model.summary()
+
+    emb_name = 'embedding' if emb_pretrain is None else 'sequential'
 
     if not append_norm:
         losses = {
@@ -76,7 +84,7 @@ with strategy.scope():
                                         margin1=arcface_margin1,
                                         margin2=arcface_margin2,
                                         margin3=arcface_margin3),
-            'embedding' : SupervisedContrastiveLoss(temperature=sup_con_temperature),
+            emb_name : SupervisedContrastiveLoss(temperature=sup_con_temperature),
         }
     else:
         losses = {
@@ -84,12 +92,12 @@ with strategy.scope():
                                         batch_size=BATCH_SIZE,
                                         label_smoothing=arcface_label_smoothing,
                                         margin=arcface_margin2),
-            'embedding' : SupervisedContrastiveLoss(temperature=sup_con_temperature),
+            emb_name : SupervisedContrastiveLoss(temperature=sup_con_temperature),
         }
 
     loss_weights = {
         'cate_output' : arc_face_weight,
-        'embedding' : sup_con_weight,
+        emb_name : sup_con_weight,
     }
 
     metrics = {

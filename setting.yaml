@@ -1,16 +1,16 @@
 route: ./
-seed: 42
-CUDA_VISIBLE_DEVICES: 0,1
+seed: 1024
+CUDA_VISIBLE_DEVICES: 0,1,2,3
 
 im_size: 160
-im_size_before_crop: 180 # ~ for not using this
-crop_prob: 0.8
+im_size_before_crop: 172 # ~ for not using this
+crop_prob: 0.7
 
 label_mode: cate_int
 BATCH_SIZE: 256
 
 path_to_dlib_model: 'download/shape_predictor_68_face_landmarks.dat'
-n_thres: 5
+n_thres: 10
 n_mask: 2
 
 valid_ratio: 0.001
@@ -18,7 +18,7 @@ test_ratio: ~
 
 train_with_labels: True
 train_repeat: True
-train_shuffle: 8192
+train_shuffle: 512
 train_augment: True
 
 valid_with_labels: True
@@ -26,10 +26,12 @@ valid_repeat: False
 valid_shuffle: False
 valid_augment: False
 
-use_simple_emb: False
+use_simple_emb: True
+
+emb_pretrain: '/storage/hieunmt/faceid/mask/encoder/mask_encoder_v2_first_train_best_model_EfficientNetV2S_160_512_88576.h5'
 
 base_name: 'EfficientNetV2S'
-final_dropout: 0.4
+final_dropout: 0.2
 have_emb_layer: True
 emb_dim: 512
 use_normdense: True
@@ -46,7 +48,7 @@ pretrained: ~
 
 arcface_label_smoothing: 0
 arcface_margin1: 1.0
-arcface_margin2: 0.6
+arcface_margin2: 0.4 # adaface margin
 arcface_margin3: 0
 arc_face_weight: 1.0
 
@@ -56,8 +58,8 @@ sup_con_weight: 1.0
 monitor: val_loss
 mode: min
 
-max_lr: 1.0e-3
+max_lr: 4.0e-4
 min_lr: 1.0e-5
-cycle_epoch: 30
+cycle_epoch: 5
 n_cycle: 1
 save_weights_only: False

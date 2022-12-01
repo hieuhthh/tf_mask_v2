@@ -3,7 +3,9 @@ import shutil
 import multiprocessing
 import cv2
 
-def clean_image(route, to_des, im_size):
+from crop_face import *
+
+def clean_image(route, to_des, im_size, do_crop_face=False):
     """
     using multiprocessing
     input:
@@ -16,6 +18,11 @@ def clean_image(route, to_des, im_size):
     """
 
     global task
+
+    print(route)
+
+    if do_crop_face:
+        crop_face, extract_face = get_crop_face_tool(im_size=im_size, scale=1.4)
 
     def task(route, all_class, list_cls, to_des, im_size):
         print('Start task')
@@ -41,6 +48,11 @@ def clean_image(route, to_des, im_size):
 
                 try:
                     img = cv2.imread(impath)
+
+                    if do_crop_face:
+                        bb_box = extract_face(img)
+                        img = crop_face(img, bb_box)
+    
                     img = cv2.resize(img, (im_size, im_size))
                     cv2.imwrite(imsave, img)
                 except:
@@ -63,10 +75,10 @@ def clean_image(route, to_des, im_size):
         end_pos = (i + 1) * n_per
         list_cls = all_class[start_pos:end_pos]
      
+        # task(route,all_class,list_cls,to_des,im_size)
+
         p = pool.apply_async(task, args=(route,all_class,list_cls,to_des,im_size))
         processes.append(p)
-
-        # task(route,all_class,list_cls)
 
     result = [p.get() for p in processes]
 
@@ -80,8 +92,6 @@ if __name__ == '__main__':
     globals().update(settings)
 
     des = path_join(route, 'dataset')
-    # des = path_join(route, 'mask_dataset')
-
     mkdir(des)
 
     # route = 'unzip/gnv_dataset'
@@ -93,5 +103,17 @@ if __name__ == '__main__':
     # route = 'unzip/glint360k_224'
     # clean_image(route, des, im_size)
 
-    route = 'unzip/ImgOut2'
+    # route = 'unzip/ImgOut2'
+    # clean_image(route, des, im_size)
+
+    # route = 'unzip/AFDB_masked_face_dataset'
+    # clean_image(route, des, im_size)
+
+    # route = 'unzip/RWMFD_part_2_pro'
+    # clean_image(route, des, im_size, do_crop_face=True)
+
+    route = 'unzip/final'
+    clean_image(route, des, im_size)
+
+    route = 'unzip/masked_ms1m'
     clean_image(route, des, im_size)
