@@ -41,6 +41,45 @@ class ArcfaceLossSimple(tf.keras.losses.Loss):
     def from_config(cls, config):
         return cls(**config)
 
+class ArcfaceLossSimple(tf.keras.losses.Loss):
+    def __init__(self, margin=0.5, scale=64.0, from_logits=True, label_smoothing=0, **kwargs):
+        super(ArcfaceLossSimple, self).__init__(**kwargs)
+        self.margin, self.scale, self.from_logits, self.label_smoothing = margin, scale, from_logits, label_smoothing
+        self.margin_cos, self.margin_sin = tf.cos(margin), tf.sin(margin)
+        self.threshold = tf.cos(np.pi - margin)
+        # self.low_pred_punish = tf.sin(np.pi - margin) * margin
+        self.theta_min = -2
+        self.batch_labels_back_up = None
+
+    def build(self, batch_size):
+        self.batch_labels_back_up = tf.Variable(tf.zeros([batch_size], dtype="int64"), dtype="int64", trainable=False)
+
+    def call(self, y_true, norm_logits):
+        if self.batch_labels_back_up is not None:
+            self.batch_labels_back_up.assign(tf.argmax(y_true, axis=-1))
+        pick_cond = tf.where(tf.math.not_equal(y_true, 0))
+        y_pred_vals = tf.gather_nd(norm_logits, pick_cond)
+        theta = y_pred_vals * self.margin_cos - tf.sqrt(1 - tf.pow(y_pred_vals, 2)) * self.margin_sin
+        theta_valid = tf.where(y_pred_vals > self.threshold, theta, self.theta_min - theta)
+        arcface_logits = tf.tensor_scatter_nd_update(norm_logits, pick_cond, theta_valid) * self.scale
+        return tf.keras.losses.categorical_crossentropy(y_true, arcface_logits, from_logits=self.from_logits, label_smoothing=self.label_smoothing)
+
+    def get_config(self):
+        config = super(ArcfaceLossSimple, self).get_config()
+        config.update(
+            {
+                "margin": self.margin,
+                "scale": self.scale,
+                "from_logits": self.from_logits,
+                "label_smoothing": self.label_smoothing,
+            }
+        )
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
 class ArcfaceLoss(tf.keras.losses.Loss):
     def __init__(self, margin1=1.0, margin2=0.5, margin3=0.0, scale=64.0, from_logits=True, label_smoothing=0, **kwargs):
         super(ArcfaceLoss, self).__init__(**kwargs)

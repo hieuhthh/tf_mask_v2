@@ -4,3 +4,4 @@ unzip
 dataset
 __pycache__
 mask_dataset
+pretrain
