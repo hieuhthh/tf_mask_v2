@@ -28,7 +28,7 @@ def build_gen_glasses(path_to_dlib_model):
 if __name__ == '__main__':
     path_to_dlib_model = 'download/shape_predictor_68_face_landmarks.dat'
     tool_gen_glasses = build_gen_glasses(path_to_dlib_model)
-    img = cv2.imread("/home/lap14880/hieunmt/tf_nonmask/unzip/VN-celeb/3/0.png")
+    img = cv2.imread("/storage/hieunmt/tf_nonmask/unzip/VN-celeb/1/1.png")
     cv2.imwrite("faceglasses_input.jpg",img)
     img = tool_gen_glasses(img)
-    cv2.imwrite("facemask_output.jpg",img)
+    cv2.imwrite("faceglasses_output.jpg",img)
