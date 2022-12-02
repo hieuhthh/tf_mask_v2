@@ -2,10 +2,13 @@ import os
 import shutil
 import multiprocessing
 import cv2
+import random
 
 from gen_mask import *
+from gen_classes import *
 
-def make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask=2, do_resize=True, n_thres=5):
+def make_mask_dataset(route, to_des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0, 
+                      n_mask=2, do_resize=True, n_thres=5):
     """
     using multiprocessing
     """
@@ -18,11 +21,9 @@ def make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask=2, do_resize
 
     global task
 
+    sign = "mask" if tool_gen_glasses is None else "glasses_mask"
+
     def task(route, list_cls, to_des, im_size):
-        print('Start task')
-
-        sign = "mask"
-
         for cl in list_cls:
             path2cl = os.path.join(route, cl)
 
@@ -49,6 +50,11 @@ def make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask=2, do_resize
                         img = cv2.imread(impath)
                         img = cv2.resize(img, (im_size, im_size)) if do_resize else img
                         img = tool_gen_mask(img)
+                        # if tool_gen_glasses is not None:
+                        #     if random.random() < glasses_prob:
+                        #         temp_img = tool_gen_glasses(img)
+                        #         if temp_img is not None:
+                        #             img = temp_img
                         imsave = os.path.join(des_class, f"{i}_" + imfile)
                         cv2.imwrite(imsave, img)
                     except:
@@ -65,8 +71,6 @@ def make_mask_dataset(route, to_des, im_size, tool_gen_mask, n_mask=2, do_resize
     n_per = int(n_labels // cpu_count + 1)
 
     for i in range(cpu_count):
-        print(f'Start cpu {i}')
-
         start_pos = i * n_per
         end_pos = (i + 1) * n_per
         list_cls = all_class[start_pos:end_pos]
@@ -91,18 +95,24 @@ if __name__ == '__main__':
     globals().update(settings)
     
     tool_gen_mask = build_gen_mask(path_to_dlib_model, from_cv2=True)
+    # tool_gen_glasses = build_gen_glasses(path_to_dlib_model)
 
-    des = path_join(route, 'dataset')
+    des = path_join(route, 'mask_dataset')
     mkdir(des)
 
-    do_resize = True
+    # route = 'unzip/VN-celeb'
+    # make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+    #                   n_mask=4, do_resize=True, n_thres=1000)
 
-    route = '/storage/hieunmt/tf_nonmask_v2/tf_nonmask/unzip/VN-celeb'
-    make_mask_dataset(route, des, im_size, tool_gen_mask, n_mask, do_resize=do_resize, n_thres=n_thres)
+    # route = 'unzip/gnv_dataset'
+    # make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+    #                   n_mask=4, do_resize=True, n_thres=1000)
 
-    route = '/storage/hieunmt/tf_nonmask_v2/tf_nonmask/unzip/gnv_dataset'
-    make_mask_dataset(route, des, im_size, tool_gen_mask, n_mask, do_resize=do_resize, n_thres=n_thres)
+    route = 'unzip/processed_crop'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+                      n_mask=4, do_resize=True, n_thres=1000)
 
-    route = '/storage/hieunmt/tf_nonmask_v2/tf_nonmask/unzip/glint360k_224'
-    make_mask_dataset(route, des, im_size, tool_gen_mask, n_mask, do_resize=do_resize, n_thres=n_thres)
+    # route = 'unzip/glint360k_224'
+    # make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+    #                   n_mask=2, do_resize=True, n_thres=1000)
 

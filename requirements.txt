@@ -10,3 +10,8 @@ git+https://github.com/leondgarse/keras_cv_attention_models
 dlib
 dotmap
 imutils
+mediapipe
+dlib
+dotmap
+imutils
+scikit-learn

@@ -29,21 +29,11 @@ def fast_unzip(zip_path, out_path):
 # zip_path = path_join(from_dir, filename + '.zip')
 # fast_unzip(zip_path, des)
 
-# with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-#     zip_ref.extractall(des)
-
 # filename = 'gnv_dataset'
 # zip_path = path_join(from_dir, filename + '.zip')
 # fast_unzip(zip_path, des)
 
-# zip_path = '/home/lap14880/face_bucket_huy/glint360k_224_copy.zip'
-# fast_unzip(zip_path, des)
-
 # filename = 'mask_tinh'
-# zip_path = path_join(from_dir, filename + '.zip')
-# fast_unzip(zip_path, des)
-
-# filename = 'RWMFD_part_2_pro'
 # zip_path = path_join(from_dir, filename + '.zip')
 # fast_unzip(zip_path, des)
 
@@ -51,11 +41,26 @@ def fast_unzip(zip_path, out_path):
 # zip_path = path_join(from_dir, filename + '.zip')
 # fast_unzip(zip_path, des)
 
-filename = 'masked_ms1m'
-zip_path = path_join(from_dir, filename + '.zip')
-fast_unzip(zip_path, des)
+# filename = 'RWMFD_part_2_pro'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
 
-filename = 'final'
-zip_path = path_join(from_dir, filename + '.zip')
-fast_unzip(zip_path, des)
+# filename = 'final'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
+
+# filename = 'masked_ms1m'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
+
+# filename = 'Real_faces_align_masked'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
+
+# filename = 'processed_crop'
+# zip_path = path_join(from_dir, filename + '.zip')
+# fast_unzip(zip_path, des)
+
+# zip_path = '/home/minint-t14g3hk-local/face_bucket_huy/glint360k_224_copy.zip'
+# fast_unzip(zip_path, des)
 

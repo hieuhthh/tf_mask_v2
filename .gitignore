@@ -5,3 +5,4 @@ dataset
 __pycache__
 mask_dataset
 pretrain
+clean_tinh_dataset

@@ -70,7 +70,7 @@ def build_gen_mask(path_to_dlib_model, from_cv2=False):
 if __name__ == '__main__':
     path_to_dlib_model = 'download/shape_predictor_68_face_landmarks.dat'
     tool_gen_mask = build_gen_mask(path_to_dlib_model, from_cv2=True)
-    img = cv2.imread("/home/lap14880/hieunmt/tf_nonmask/unzip/VN-celeb/3/0.png")
+    img = cv2.imread("unzip/VN-celeb/3/0.png")
     cv2.imwrite("facemask_input.jpg",img)
     img = tool_gen_mask(img)
     cv2.imwrite("facemask_output.jpg",img)

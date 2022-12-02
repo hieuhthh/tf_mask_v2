@@ -34,7 +34,8 @@ print('epochs:', epochs)
 seedEverything(seed)
 print('BATCH_SIZE:', BATCH_SIZE)
 
-route_dataset = path_join(route, 'dataset')
+# route_dataset = path_join(route, 'dataset')
+route_dataset = '/home/minint-t14g3hk-local/hieunmt/tf_mask_v2/clean_tinh_dataset'
 print('route_dataset:', route_dataset)
 
 X_train, Y_train, all_class, X_valid, Y_valid = auto_split_data_multiprocessing_faster(route_dataset, valid_ratio, test_ratio, seed)
@@ -65,8 +66,7 @@ with strategy.scope():
             emb_model = create_simple_emb_model(base, final_dropout, have_emb_layer, emb_dim)
         else:
             emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
-                                        emb_dim, extract_dim, dense_dim, trans_layers,
-                                        kernel_sizes, dilation_rates)
+                                         emb_dim, extract_dim, merge_dim, dilation_rates)
     else:
         emb_model = tf.keras.models.load_model(emb_pretrain, custom_objects={'wBiFPNAdd':wBiFPNAdd, 
                                                                              'PositionEmbedding':PositionEmbedding,

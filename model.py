@@ -51,8 +51,7 @@ def create_simple_emb_model(base, final_dropout=0.1, have_emb_layer=True, emb_di
     return model
 
 def create_emb_model(base, final_dropout=0.1, have_emb_layer=True, name="embedding",
-                     emb_dim=512, extract_dim=128, dense_dim=96, trans_layers=1,
-                     kernel_sizes=[1, 3, 7], dilation_rates=[4, 8, 12]):
+                     emb_dim=512, extract_dim=128, merge_dim=256, dilation_rates=[4, 8, 12]):
     backbone_layer_names = [
                 'stack_0_block1_output',
                 'stack_1_block3_output',
@@ -69,37 +68,22 @@ def create_emb_model(base, final_dropout=0.1, have_emb_layer=True, name="embeddi
 
     list_features = []
     for backbone_layer in backbone_layers:
-        f_mkn = mkn_conv(backbone_layer, extract_dim, kernel_sizes)
-        f_atrous = atrous_conv(backbone_layer, extract_dim, dilation_rates)
-        f = f_mkn + f_atrous
-        f = wBiFPNAdd()(f)
+        f = atrous_conv(backbone_layer, extract_dim, dilation_rates)
+        f = Concatenate()(f)
+        f = self_attention(f, merge_dim)
         f = GlobalAveragePooling2D()(f)
         list_features.append(f)
 
-    x = tf.stack(list_features, 1)
+    local_feature = softmax_merge()(list_features)
 
-    num_heads = x.shape[1]
+    x = Concatenate()([global_feature, local_feature])
 
-    pe = PositionEmbedding(input_shape=(num_heads, extract_dim),
-                           input_dim=num_heads,
-                           output_dim=extract_dim,
-                           mode=PositionEmbedding.MODE_ADD,
-    )
-
-    x = pe(x)
-
-    for i in range(trans_layers):
-        x = TransformerEncoder(extract_dim, dense_dim, num_heads)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-
-    x = Concatenate()([global_feature, x])
     x = Dropout(final_dropout)(x)
 
     if have_emb_layer:
         x = Dense(emb_dim, use_bias=False, name='bottleneck')(x)
         x = BatchNormalization(name='bottleneck_bn')(x)
-    
+
     model = Model(base.input, x, name=name)
 
     return model
@@ -148,8 +132,7 @@ if __name__ == "__main__":
             emb_model = create_simple_emb_model(base, final_dropout, have_emb_layer, emb_dim)
         else:
             emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
-                                        emb_dim, extract_dim, dense_dim, trans_layers,
-                                        kernel_sizes, dilation_rates)
+                                         emb_dim, extract_dim, merge_dim, dilation_rates)
     else:
         emb_model = tf.keras.models.load_model(emb_pretrain, custom_objects={'wBiFPNAdd':wBiFPNAdd, 
                                                                              'PositionEmbedding':PositionEmbedding,

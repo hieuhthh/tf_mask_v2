@@ -397,3 +397,32 @@ def atrous_conv(inputs, filters, dilation_rates=[6,12,18], kernel_size=3, paddin
         f = bn_act(f, activation)
         list_f.append(f)
     return list_f
+
+class softmax_merge(tf.keras.layers.Layer):
+    def __init__(self, epsilon=1e-4, **kwargs):
+        super(softmax_merge, self).__init__(**kwargs)
+        self.epsilon = epsilon
+
+    def build(self, input_shape):
+        num_in = len(input_shape)
+        self.w = self.add_weight(name=self.name,
+                                shape=(num_in,),
+                                initializer=tf.keras.initializers.constant(1 / num_in),
+                                trainable=True,
+                                dtype=tf.float32)
+
+    def call(self, inputs, **kwargs):
+        w = tf.keras.activations.softmax(tf.expand_dims(self.w, 0))[0]
+        x = tf.reduce_sum([w[i] * inputs[i] for i in range(len(inputs))], axis=0)
+        x = x / (tf.reduce_sum(w) + self.epsilon)
+        return x
+
+    def compute_output_shape(self, input_shape):
+        return input_shape[0]
+
+    def get_config(self):
+        config = super(softmax_merge, self).get_config()
+        config.update({
+          'epsilon': self.epsilon
+        })
+        return config
