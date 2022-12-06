@@ -6,3 +6,4 @@ __pycache__
 mask_dataset
 pretrain
 clean_tinh_dataset
+faster_mask_dataset

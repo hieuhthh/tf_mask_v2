@@ -3,6 +3,7 @@ import shutil
 import multiprocessing
 import cv2
 import random
+import time
 
 from gen_mask import *
 from gen_classes import *
@@ -60,16 +61,19 @@ def make_mask_dataset(route, to_des, im_size, tool_gen_mask, tool_gen_glasses=No
                     except:
                         print(i, impath)
 
-        print('Finish')
-
+    all_class = sorted(os.listdir(route))
     cpu_count = multiprocessing.cpu_count()
+    cpu_count = cpu_count * max(min(80, len(all_class) // 2000), 1)
+
     pool = multiprocessing.Pool(cpu_count)
     processes = []
 
-    all_class = sorted(os.listdir(route))
     n_labels = len(all_class)
     n_per = int(n_labels // cpu_count + 1)
 
+    print('cpu_count', cpu_count)
+
+    start_time = time.time()
     for i in range(cpu_count):
         start_pos = i * n_per
         end_pos = (i + 1) * n_per
@@ -84,6 +88,8 @@ def make_mask_dataset(route, to_des, im_size, tool_gen_mask, tool_gen_glasses=No
 
     pool.close()
     pool.join()
+
+    print("Time:", time.time() - start_time)
 
 if __name__ == '__main__':
     from utils import *
@@ -100,19 +106,19 @@ if __name__ == '__main__':
     des = path_join(route, 'mask_dataset')
     mkdir(des)
 
-    # route = 'unzip/VN-celeb'
-    # make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
-    #                   n_mask=4, do_resize=True, n_thres=1000)
+    route = 'unzip/VN-celeb'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+                      n_mask=4, do_resize=True, n_thres=1000)
 
-    # route = 'unzip/gnv_dataset'
-    # make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
-    #                   n_mask=4, do_resize=True, n_thres=1000)
+    route = 'unzip/gnv_dataset'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+                      n_mask=4, do_resize=True, n_thres=1000)
 
     route = 'unzip/processed_crop'
     make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
                       n_mask=4, do_resize=True, n_thres=1000)
 
-    # route = 'unzip/glint360k_224'
-    # make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
-    #                   n_mask=2, do_resize=True, n_thres=1000)
+    route = 'unzip/glint360k_224'
+    make_mask_dataset(route, des, im_size, tool_gen_mask, tool_gen_glasses=None, glasses_prob=0.0,
+                      n_mask=2, do_resize=True, n_thres=1000)
 

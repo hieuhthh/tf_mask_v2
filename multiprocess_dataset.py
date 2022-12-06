@@ -40,6 +40,8 @@ def get_data_from_phrase_multiprocessing(route, phrase=None):
     all_class = sorted(os.listdir(phrase_path))
     n_labels = len(all_class)
     n_per = int(n_labels // cpu_count + 1)
+    cpu_count = cpu_count * max(min(80, len(all_class) // 2000), 1)
+    print('cpu_count', cpu_count)
 
     for i in range(cpu_count):
         start_pos = i * n_per

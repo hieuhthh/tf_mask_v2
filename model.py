@@ -71,6 +71,10 @@ def create_emb_model(base, final_dropout=0.1, have_emb_layer=True, name="embeddi
         f = atrous_conv(backbone_layer, extract_dim, dilation_rates)
         f = Concatenate()(f)
         f = self_attention(f, merge_dim)
+        
+        skip = conv_bn_act(backbone_layer, merge_dim, 1)
+        f = f + skip
+    
         f = GlobalAveragePooling2D()(f)
         list_features.append(f)
 
@@ -134,9 +138,8 @@ if __name__ == "__main__":
             emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
                                          emb_dim, extract_dim, merge_dim, dilation_rates)
     else:
-        emb_model = tf.keras.models.load_model(emb_pretrain, custom_objects={'wBiFPNAdd':wBiFPNAdd, 
-                                                                             'PositionEmbedding':PositionEmbedding,
-                                                                             'TransformerEncoder':TransformerEncoder})
+        emb_model = tf.keras.models.load_model(emb_pretrain, custom_objects={'softmax_merge':softmax_merge, 
+                                                                            })
 
     model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int, append_norm)
     model.summary()

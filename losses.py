@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras.optimizers import Adam, SGD, Optimizer
 import tensorflow_addons as tfa
+
 class ArcfaceLossSimple(tf.keras.losses.Loss):
     def __init__(self, margin=0.5, scale=64.0, from_logits=True, label_smoothing=0, **kwargs):
         super(ArcfaceLossSimple, self).__init__(**kwargs)

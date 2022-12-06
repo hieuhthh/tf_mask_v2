@@ -13,10 +13,10 @@ contrast: [0.8, 1.2]
 brightness: 0.2
 hue: ~
 
-solarize_prob: 0.1
+solarize_prob: 0.0
 solarize_threshold: 0.5
 
-equalize_prob: 0.1
+equalize_prob: 0.0
 
 cutout_mask_prob: 0.2
 cutout_mask_height_factor: 0.4

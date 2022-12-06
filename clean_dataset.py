@@ -2,6 +2,7 @@ import os
 import shutil
 import multiprocessing
 import cv2
+import time
 
 from crop_face import *
 
@@ -66,8 +67,11 @@ def clean_image(route, to_des, im_size, do_crop_face=False):
     all_class = sorted(os.listdir(route))
     n_labels = len(all_class)
 
+    start_time = time.time()
+
     if do_multiprocess:    
         cpu_count = multiprocessing.cpu_count()
+        cpu_count = cpu_count * max(min(80, len(all_class) // 2000), 1)
         pool = multiprocessing.Pool(cpu_count)
         processes = []
         print('cpu_count', cpu_count)
@@ -86,44 +90,41 @@ def clean_image(route, to_des, im_size, do_crop_face=False):
 
         pool.close()
         pool.join()
-
     else:
         task(route,all_class,all_class,to_des,im_size)
 
+    print("Time:", time.time() - start_time)
+
 if __name__ == '__main__':
     from utils import *
+
+    os.environ["CUDA_VISIBLE_DEVICES"]=""
 
     settings = get_settings()
     globals().update(settings)
 
     # mask
 
-    des = path_join(route, 'clean_tinh_dataset')
+    des = path_join(route, 'mask_dataset')
     mkdir(des)
 
     route = 'unzip/ImgOut2'
     clean_image(route, des, im_size)
 
-    # des = path_join(route, 'mask_dataset')
-    # mkdir(des)
+    route = 'unzip/AFDB_masked_face_dataset'
+    clean_image(route, des, im_size)
 
-    # route = 'unzip/ImgOut2'
-    # clean_image(route, des, im_size)
+    route = 'unzip/RWMFD_part_2_pro'
+    clean_image(route, des, im_size, do_crop_face=True)
 
-    # route = 'unzip/AFDB_masked_face_dataset'
-    # clean_image(route, des, im_size)
+    route = 'unzip/final'
+    clean_image(route, des, im_size)
 
-    # route = 'unzip/RWMFD_part_2_pro'
-    # clean_image(route, des, im_size, do_crop_face=True)
+    route = 'unzip/masked_ms1m'
+    clean_image(route, des, im_size)
 
-    # route = 'unzip/final'
-    # clean_image(route, des, im_size)
-
-    # route = 'unzip/masked_ms1m'
-    # clean_image(route, des, im_size)
-
-    # route = 'unzip/Real_faces_align_masked'
-    # clean_image(route, des, im_size)
+    route = 'unzip/Real_faces_align_masked'
+    clean_image(route, des, im_size)
 
     # nonmask
 
@@ -134,6 +135,9 @@ if __name__ == '__main__':
     # clean_image(route, des, im_size)
 
     # route = 'unzip/gnv_dataset'
+    # clean_image(route, des, im_size)
+
+    #  route = 'unzip/processed_crop'
     # clean_image(route, des, im_size)
 
     # route = 'unzip/glint360k_224'
